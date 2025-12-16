@@ -1,0 +1,9 @@
+streamlit
+scikit-learn
+pandas
+numpy
+openai
+langfuse
+joblib
+dotenv
+matplotlib
