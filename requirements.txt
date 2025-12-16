@@ -7,3 +7,4 @@ langfuse
 joblib
 dotenv
 matplotlib
+pycaret
