@@ -3,7 +3,7 @@ scikit-learn
 pandas
 numpy
 openai
-langfuse
+langfuse==1.9.1
 joblib
 dotenv
 matplotlib
