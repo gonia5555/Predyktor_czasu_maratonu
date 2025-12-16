@@ -4,6 +4,7 @@ import json
 import pandas as pd
 from openai import OpenAI
 from langfuse import Langfuse
+from langfuse.decorators import observe
 import os
 from dotenv import load_dotenv
 import matplotlib.pyplot as plt
@@ -108,12 +109,6 @@ T = TEXT[LANG]
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-langfuse = Langfuse(
-    public_key=os.getenv("LANGFUSE_PUBLIC_KEY"),
-    secret_key=os.getenv("LANGFUSE_SECRET_KEY"),
-    host=os.getenv("LANGFUSE_HOST", "https://cloud.langfuse.com")
-)
-
 # =========================
 # HEADER
 # =========================
@@ -151,12 +146,9 @@ model = load_model()
 # LLM → EKSTRAKCJA
 # =========================
 
+@observe(name="extract_user_data")
 def extract_user_data(text: str) -> dict:
-    with langfuse.trace(
-        name="extract_user_data",
-        input=text
-    ):
-        prompt = """
+    prompt = """
 Extract:
 - gender (male/female)
 - age
@@ -165,23 +157,23 @@ Extract:
 Return ONLY JSON.
 """
 
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "Return only valid JSON."},
-                {"role": "user", "content": prompt + "\n\nText:\n" + text}
-            ],
-            temperature=0
-        )
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Return only valid JSON."},
+            {"role": "user", "content": prompt + "\n\nText:\n" + text}
+        ],
+        temperature=0
+    )
 
-        data = json.loads(response.choices[0].message.content)
+    data = json.loads(response.choices[0].message.content)
 
-        if data.get("gender") in ["female", "kobieta", "woman"]:
-            data["gender"] = "kobieta"
-        else:
-            data["gender"] = "mężczyzna"
+    if data.get("gender") in ["female", "kobieta", "woman"]:
+        data["gender"] = "kobieta"
+    else:
+        data["gender"] = "mężczyzna"
 
-        return data
+    return data
 
 
 def validate_data(data):
