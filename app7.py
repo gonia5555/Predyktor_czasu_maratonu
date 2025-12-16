@@ -152,9 +152,9 @@ model = load_model()
 # =========================
 
 def extract_user_data(text: str) -> dict:
-    # Langfuse 2.x – poprawne użycie
-    with langfuse.trace(input=text, metadata={"name": "extract_user_data"}):
-        prompt = """
+    langfuse.trace(name="extract_user_data", input=text)
+
+    prompt = """
 Extract:
 - gender (male/female)
 - age
@@ -163,24 +163,23 @@ Extract:
 Return ONLY JSON.
 """
 
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "Return only valid JSON."},
-                {"role": "user", "content": prompt + "\n\nText:\n" + text}
-            ],
-            temperature=0
-        )
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Return only valid JSON."},
+            {"role": "user", "content": prompt + "\n\nText:\n" + text}
+        ],
+        temperature=0
+    )
 
-        data = json.loads(response.choices[0].message.content)
+    data = json.loads(response.choices[0].message.content)
 
-        if data.get("gender") in ["female", "kobieta", "woman"]:
-            data["gender"] = "kobieta"
-        else:
-            data["gender"] = "mężczyzna"
+    if data.get("gender") in ["female", "kobieta", "woman"]:
+        data["gender"] = "kobieta"
+    else:
+        data["gender"] = "mężczyzna"
 
-        return data
-
+    return data
 
 def validate_data(data):
     missing = []
