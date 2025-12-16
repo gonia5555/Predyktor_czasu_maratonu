@@ -4,7 +4,7 @@ import json
 import pandas as pd
 from openai import OpenAI
 from langfuse import Langfuse
-from langfuse.decorators import observe
+from langfuse import observe
 import os
 from dotenv import load_dotenv
 import matplotlib.pyplot as plt
