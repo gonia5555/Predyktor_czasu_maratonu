@@ -3,8 +3,8 @@ scikit-learn
 pandas
 numpy
 openai
-langfuse==1.9.1
+langfuse
 joblib
-dotenv
+python-dotenv
 matplotlib
 pycaret
