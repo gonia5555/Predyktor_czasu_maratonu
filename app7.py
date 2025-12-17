@@ -247,7 +247,6 @@ if st.session_state.data:
 
     if st.button(T["calc"]):
         with st.spinner(T["spinner"]):
-            time.sleep(1)
             result = predict_half_marathon(data)
 
         st.success(T["success"])
